@@ -1245,7 +1245,8 @@ class SimpleSpriteManager(BaseManager):
 
         This is the default manager.
         """
-        self.process_sprite(path=self.path, name=os.path.basename(self.path))
+        out_file_name = self.config.sprite_file_name if self.config.sprite_file_name else os.path.basename(self.path)
+        self.process_sprite(path=self.path, name=out_file_name)
         self.save()
 
 
@@ -1418,6 +1419,8 @@ def main():
             help="extension for file with styles")
     group.add_option("--remove-prev", dest="remove_prev_files", action="store_true",
             help="remove previously generated files."),
+    group.add_option("--sprite-file-name", dest="sprite_file_name",
+            help=("file name for generated files (basename of folder otherwise)"))
 
     parser.add_option_group(group)
 

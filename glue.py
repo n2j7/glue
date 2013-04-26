@@ -55,6 +55,7 @@ DEFAULT_SETTINGS = {
     'quiet': False,
     'no_css': False,
     'no_img': False,
+    'css_ext': False,
     'cachebuster': False,
     'cachebuster-filename': False,
     'global_template':
@@ -821,7 +822,7 @@ class Sprite(object):
         if self.config.no_css:
             return
 
-        format = 'less' if self.config.less else 'css'
+        format = self.get_outfile_format()
         output_path = self.manager.output_path('css')
         filename = '%s.%s' % (self.filename, format)
         css_filename = os.path.join(output_path, filename)
@@ -902,7 +903,7 @@ class Sprite(object):
         html_filename = os.path.join(output_path, filename)
 
         # CSS output format
-        format = 'less' if self.config.less else 'css'
+        format = self.get_outfile_format()
 
         html_file = open(html_filename, 'w')
 
@@ -946,6 +947,11 @@ class Sprite(object):
         if reference == '@1x':
             reference = ''
         return reference
+
+    def get_outfile_format(self):
+        format = 'less' if self.config.less else 'css'
+        format =  self.config.css_ext if self.config.css_ext else format
+        return format
 
     @cached_property
     def max_ratio(self):
@@ -1381,6 +1387,8 @@ def main():
             help="don't genereate CSS files.")
     group.add_option("--no-img", dest="no_img", action="store_true",
             help="don't genereate IMG files.")
+    group.add_option("--css-ext", dest="css_ext",
+            help="extension for file with styles")
 
     parser.add_option_group(group)
 

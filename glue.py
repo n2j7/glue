@@ -56,6 +56,7 @@ DEFAULT_SETTINGS = {
     'no_css': False,
     'no_img': False,
     'css_ext': False,
+    'remove_prev_files': False,
     'cachebuster': False,
     'cachebuster-filename': False,
     'global_template':
@@ -1003,6 +1004,20 @@ class Sprite(object):
 
         return hashlib.sha1(''.join(hash_list)).hexdigest()[:10]
 
+    def remove_prev_files(self):
+        images_out_path = self.manager.output_path('img')
+        images_format = 'png'
+
+        if self.config.cachebuster_filename or self.config.cachebuster_img_filename:
+            name_filter = '^%(name)s_.{6}\.%(format)s$' % {"name": self.name, "format": images_format}
+        else:
+            name_filter = '^%(name)s\.%(format)s$' % {"name": self.name, "format": images_format}
+
+        fa = re.compile(name_filter)
+
+        for filename in os.listdir(images_out_path):
+            if fa.match(filename):
+                os.remove(os.path.join(images_out_path, filename))
 
 class ConfigManager(object):
     """Manage all the available configuration.
@@ -1124,6 +1139,8 @@ class BaseManager(object):
         self.validate()
 
         for sprite in self.sprites:
+            if self.config.remove_prev_files:
+                sprite.remove_prev_files()
             sprite.save_image()
             sprite.save_css()
             if sprite.manager.config.html:
@@ -1389,6 +1406,8 @@ def main():
             help="don't genereate IMG files.")
     group.add_option("--css-ext", dest="css_ext",
             help="extension for file with styles")
+    group.add_option("--remove-prev", dest="remove_prev_files", action="store_true",
+            help="remove previously generated files."),
 
     parser.add_option_group(group)
 

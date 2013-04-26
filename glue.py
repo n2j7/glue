@@ -75,7 +75,8 @@ DEFAULT_SETTINGS = {
          '-webkit-background-size: %(width)s %(height)s;'
          '-moz-background-size: %(width)s %(height)s;'
          'background-size: %(width)s %(height)s;'
-         '}}\n')
+         '}}\n'),
+    'class_join_separator': ',\n'
     }
 
 TEST_HTML_TEMPLATE = """
@@ -851,7 +852,8 @@ class Sprite(object):
         css_file.write(hash_line)
 
         # get all the class names and join them
-        class_names = ',\n'.join(['.%s' % i.class_name for i in self.images \
+        class_separator = self.config.class_join_separator
+        class_names = class_separator.join(['.%s' % i.class_name for i in self.images \
                                                   if ':' not in i.class_name])
 
         # add the global style for all the sprites for less bloat
@@ -1438,6 +1440,11 @@ def main():
             help=("Customize the separator used to join CSS class "
                   "names. If you want to use camelCase use "
                   "'camelcase' as separator."))
+    group.add_option("--class-join-separator", dest="class_join_separator",
+            metavar='TEMPLATE',
+            help=("Customize class join separator"
+                  "This separator will be used for join icon classes "
+                  "for global template."))
     group.add_option("--global-template", dest="global_template",
             metavar='TEMPLATE',
             help=("Customize the global section of the output CSS."

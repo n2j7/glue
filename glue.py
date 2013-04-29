@@ -850,7 +850,8 @@ class Sprite(object):
         css_file = open(css_filename, 'w')
 
         # Write the hash line to the file.
-        css_file.write(hash_line)
+        if not self.config.quiet:
+            css_file.write(hash_line)
 
         # get all the class names and join them
         class_separator = self.config.class_join_separator

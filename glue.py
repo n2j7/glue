@@ -395,7 +395,11 @@ class Image(object):
         self.sprite = sprite
         self.filename, self.format = name.rsplit('.', 1)
 
-        pseudo = set(self.filename.split('_')).intersection(PSEUDO_CLASSES)
+        if not self.sprite.manager.config.ignore_filename_pseudo:
+            pseudo = set(self.filename.split('_')).intersection(PSEUDO_CLASSES)
+        else:
+            pseudo = ''
+
         self.pseudo = ':%s' % list(pseudo)[-1] if pseudo else ''
 
         self.path = path or os.path.join(sprite.path, name)
@@ -1443,6 +1447,8 @@ def main():
             help="the output image format will be png8 instead of png32")
     group.add_option("--ignore-filename-paddings", action='store_true',
             dest="ignore_filename_paddings", help="ignore filename paddings")
+    group.add_option("--ignore-filename-pseudo", action='store_true',
+            dest="ignore_filename_pseudo", help="ignore filename paddings")
     group.add_option("--debug", dest="debug", action='store_true',
             help="don't catch unexpected errors and let glue fail hardly")
     parser.add_option_group(group)
